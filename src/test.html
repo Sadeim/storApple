@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Device Wizard</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div 
+        x-data="deviceWizard()" 
+        class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-xl"
+    >
+        <!-- Step 1: Device Selection -->
+        <div x-show="step === 1" class="space-y-6">
+            <h2 class="text-2xl font-bold text-center mb-6">اختر جهازك</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <template x-for="device in devices" :key="device.id">
+                    <div 
+                        @click="selectDevice(device)"
+                        class="bg-gray-50 p-4 rounded-lg hover:bg-blue-50 cursor-pointer transition text-center"
+                    >
+                        <img :src="device.image" :alt="device.name" class="h-24 mx-auto mb-2">
+                        <span class="font-semibold" x-text="device.name"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Step 2: User Details -->
+        <div x-show="step === 2" class="space-y-6">
+            <button 
+                @click="step = 1" 
+                class="mb-4 text-blue-600 hover:text-blue-800 flex items-center"
+            >
+                ← رجوع
+            </button>
+            <h2 class="text-2xl font-bold text-center mb-6">تفاصيل التواصل</h2>
+            <form @submit.prevent="submitDetails" class="max-w-md mx-auto space-y-4">
+                <div>
+                    <label class="block mb-2">البريد الإلكتروني</label>
+                    <input 
+                        x-model="email" 
+                        type="email" 
+                        required 
+                        class="w-full p-2 border rounded-md"
+                        placeholder="أدخل بريدك الإلكتروني"
+                    >
+                </div>
+                <div>
+                    <label class="block mb-2">طريقة التوصيل</label>
+                    <select 
+                        x-model="deliveryMethod" 
+                        required 
+                        class="w-full p-2 border rounded-md"
+                    >
+                        <option value="">اختر طريقة التوصيل</option>
+                        <option value="standard">توصيل قياسي</option>
+                        <option value="express">توصيل سريع</option>
+                        <option value="pickup">استلام من المتجر</option>
+                    </select>
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+                >
+                    المتابعة للدفع
+                </button>
+            </form>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div x-show="step === 3" class="text-center space-y-6">
+            <h2 class="text-2xl font-bold">تأكيد الطلب</h2>
+            <div class="bg-green-50 p-6 rounded-lg">
+                <p class="mb-4">شكراً لطلبك!</p>
+                <p>الجهاز: <span x-text="selectedDevice.name"></span></p>
+                <p>البريد الإلكتروني: <span x-text="email"></span></p>
+                <p>طريقة التوصيل: <span x-text="deliveryMethod"></span></p>
+            </div>
+            <button 
+                @click="resetWizard" 
+                class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+            >
+                إعادة الطلب
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function deviceWizard() {
+            return {
+                step: 1,
+                selectedDevice: null,
+                email: '',
+                deliveryMethod: '',
+                devices: [
+                    { id: 'mac', name: 'ماك', image: 'https://via.placeholder.com/150' },
+                    { id: 'iphone', name: 'آيفون', image: 'https://via.placeholder.com/150' },
+                    { id: 'ipad', name: 'آيباد', image: 'https://via.placeholder.com/150' },
+                    { id: 'watch', name: 'ساعة آبل', image: 'https://via.placeholder.com/150' }
+                ],
+                selectDevice(device) {
+                    this.selectedDevice = device;
+                    this.step = 2;
+                },
+                submitDetails() {
+                    if (this.email && this.deliveryMethod) {
+                        this.step = 3;
+                    }
+                },
+                resetWizard() {
+                    this.step = 1;
+                    this.selectedDevice = null;
+                    this.email = '';
+                    this.deliveryMethod = '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
